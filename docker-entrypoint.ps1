@@ -1,5 +1,5 @@
-#!/bin/bash
-set -e
+$ErrorActionPreference = 'Stop'
+# work ongoing!
 
 # Warn if the DOCKER_HOST socket does not exist
 if [[ $DOCKER_HOST = unix://* ]]; then

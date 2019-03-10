@@ -1,4 +1,5 @@
-#!/bin/bash -e
+$ErrorActionPreference = 'Stop'
+# work ongoing!
 
 # The first argument is the bit depth of the dhparam, or 2048 if unspecified
 DHPARAM_BITS=${1:-2048}
