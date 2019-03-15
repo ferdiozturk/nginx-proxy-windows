@@ -1,6 +1,6 @@
-version: '2'
+version: '1'
 services:
-  nginx-proxy:
+  nginx-proxy-windows:
     image: ferdiozturk/nginx-proxy-windows
     container_name: nginx-proxy-windows
     ports:
