@@ -1,7 +1,7 @@
 version: '1'
 services:
   nginx-proxy-windows:
-    image: ferdiozturk/nginx-proxy-windows
+    image: foerdi/nginx-proxy-windows
     container_name: nginx-proxy-windows
     ports:
       - "80:80"
