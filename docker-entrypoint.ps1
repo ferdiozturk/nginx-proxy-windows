@@ -2,12 +2,9 @@ $ErrorActionPreference = 'Stop'
 # work ongoing!
 
 # Warn if the $env:DOCKER_HOST socket does not exist
-if ($env:DOCKER_HOST -ne "") 
+if ($env:DOCKER_HOST -eq $null) 
 {
-	$socket=$env:DOCKER_HOST
-}
-else
-{
+	Write-Warning "Warning: unable to determine DOCKER_HOST"
 	Exit
 }
 
@@ -17,8 +14,8 @@ else
 .\generate-dhparam.ps1 $env:DHPARAM_BITS $env:DHPARAM_GENERATION
 
 # Compute the DNS resolvers for use in the templates - if the IP contains ":", it's IPv6 and must be enclosed in []
-$env:RESOLVERS=$(awk '$1 == "nameserver" {print ($2 ~ ":")? "["$2"]": $2}' ORS=' ' /etc/resolv.conf | sed 's/ *$//g')
-if ($env:RESOLVERS -eq "") 
+$(Get-NetIPConfiguration | select -ExpandProperty DNSServer).ServerAddresses | select -unique | % { if ($_.contains(":")) {$env:RESOLVERS += "[$($_)] "}else{$env:RESOLVERS += "$($_) "} }
+if ($env:RESOLVERS -eq $null) 
 {
     Write-Warning "Warning: unable to determine DNS resolvers for nginx"
 }

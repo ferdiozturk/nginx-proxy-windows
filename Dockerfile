@@ -4,7 +4,7 @@ LABEL maintainer="Ferdi Oeztuerk foerdi@gmail.com"
 ENV NGINX_VERSION 1.15.9
 ENV DOCKER_GEN_VERSION 0.7.4
 
-ENV PATH "C:\Windows\System32;C:\nginx-${NGINX_VERSION};C:\sed\bin;C:\gawk\bin;C:\forego;C:\docker-gen"
+ENV PATH C:\\Windows\\System32;C:\\Windows;C:\\nginx-${NGINX_VERSION};C:\\gawk\\bin;C:\\forego
 
 # Download Nginx
 RUN curl.exe -kfSL -o nginx.zip http://nginx.org/download/nginx-%NGINX_VERSION%.zip && \
@@ -30,10 +30,8 @@ RUN curl.exe -kfSL -o forego.zip https://bin.equinox.io/c/ekMN3bCZFUn/forego-sta
   mkdir "C:\forego" && \
   tar.exe -xf forego.zip -C "C:\forego"
 
-# Download docker-gen in above specified version
-RUN curl.exe -kfSL -o docker-gen.zip https://github.com/ferdiozturk/docker-gen/releases/download/%DOCKER_GEN_VERSION%/docker-gen-windows-amd64-%DOCKER_GEN_VERSION%.zip && \
-  mkdir "C:\docker-gen" && \
-  tar.exe -xf docker-gen.zip -C "C:\docker-gen"
+# Download docker-gen(-windows) in specified version
+RUN curl.exe -kfSL -o docker-gen.exe https://github.com/ferdiozturk/docker-gen-windows/releases/download/%DOCKER_GEN_VERSION%-windows/docker-gen.exe
 
 COPY network_internal.conf C:/nginx-%NGINX_VERSION%/conf/
 
@@ -42,7 +40,7 @@ COPY network_internal.conf C:/nginx-%NGINX_VERSION%/conf/
 # https://dille.name/blog/2017/11/29/using-the-docker-named-pipe-as-a-non-admin-for-windowscontainers/
 ENV DOCKER_HOST tcp://127.0.0.1:2375
 
-VOLUME ["C:/Program Files/nginx/certs", "C:/Program Files/nginx/dhparam"]
+VOLUME ["C:/nginx/certs", "C:/nginx/dhparam"]
 
 ENTRYPOINT ["docker-entrypoint.ps1"]
 CMD ["forego", "start", "-r"]
