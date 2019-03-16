@@ -1,12 +1,19 @@
-version: '1'
+version: '3.7'
 services:
   nginx-proxy-windows:
     image: foerdi/nginx-proxy-windows
     container_name: nginx-proxy-windows
+    environment: 
+      - "DOCKER_HOST=${DOCKER_HOST}"
     ports:
       - "80:80"
 
-  whoami:
-    image: jwilder/whoami
+  whoisthis:
+    image: stefanscherer/whoami
     environment:
-      - VIRTUAL_HOST=whoami.local
+      - VIRTUAL_HOST=whoisthis.local
+
+  whoisthat:
+    image: stefanscherer/whoami
+    environment:
+      - VIRTUAL_HOST=whoisthat.local

@@ -1,0 +1,1 @@
+C:\nginx\nginx.exe -s reload

@@ -3,27 +3,22 @@ LABEL maintainer="Ferdi Oeztuerk foerdi@gmail.com"
 
 ENV NGINX_VERSION 1.15.9
 ENV DOCKER_GEN_VERSION 0.7.4
+ENV PWSH_CORE_VERSION 6.1.3
+ENV DHPARAM_BITS 2048
 
-ENV PATH C:\\Windows\\System32;C:\\Windows;C:\\nginx-${NGINX_VERSION};C:\\gawk\\bin;C:\\forego
+ENV PATH C:\\Windows\\System32;C:\\Windows;C:\\pwsh;C:\\nginx;C:\\forego;C:\\openssl;C:\\app;C:\\docker-gen
+
+# Download PowerShell Core
+RUN curl.exe -kfSL -o pwsh.zip https://github.com/PowerShell/PowerShell/releases/download/v%PWSH_CORE_VERSION%/PowerShell-%PWSH_CORE_VERSION%-win-x64.zip && \
+  mkdir "C:\pwsh" && \
+  tar.exe -xf pwsh.zip -C "C:\pwsh"
 
 # Download Nginx
 RUN curl.exe -kfSL -o nginx.zip http://nginx.org/download/nginx-%NGINX_VERSION%.zip && \
-  tar.exe -xf nginx.zip -C "C:"
+  tar.exe -xf nginx.zip -C "C:" && \
+  ren nginx-%NGINX_VERSION% nginx
 
-# UNUSED Download GnuWin "sed: stream editor"
-#RUN curl.exe -kfSL -o sed.zip https://sourceforge.net/projects/gnuwin32/files/sed/4.2.1/sed-4.2.1-bin.zip/download && \
-#  mkdir "C:\sed" && \
-#  tar.exe -xf sed.zip -C "C:\sed"
-
-# UNUSED Download GnuWin "Gawk: pattern scanning and processing language"
-#RUN curl.exe -kfSL -o gawk.zip https://sourceforge.net/projects/gnuwin32/files/gawk/3.1.6-1/gawk-3.1.6-1-bin.zip/download && \
-#  mkdir "C:\gawk" && \
-#  tar.exe -xf gawk.zip -C "C:\gawk"
-
-# Configure Nginx and apply fix for very long server names
-#RUN echo "daemon off;" >> C:\nginx-1.15.9\conf\nginx.conf && \
-#  sed.exe -i "s/worker_processes  1/worker_processes  auto/" C:\nginx-1.15.9\conf\nginx.conf
-COPY nginx.conf C:/nginx-%NGINX_VERSION%/conf/
+COPY nginx.conf C:/nginx/conf/
 
 # Download forego
 RUN curl.exe -kfSL -o forego.zip https://bin.equinox.io/c/ekMN3bCZFUn/forego-stable-windows-amd64.zip && \
@@ -31,16 +26,28 @@ RUN curl.exe -kfSL -o forego.zip https://bin.equinox.io/c/ekMN3bCZFUn/forego-sta
   tar.exe -xf forego.zip -C "C:\forego"
 
 # Download docker-gen(-windows) in specified version
-RUN curl.exe -kfSL -o docker-gen.exe https://github.com/ferdiozturk/docker-gen-windows/releases/download/%DOCKER_GEN_VERSION%-windows/docker-gen.exe
+RUN curl.exe -kfSL -o docker-gen.exe https://github.com/ferdiozturk/docker-gen-windows/releases/download/%DOCKER_GEN_VERSION%-windows/docker-gen.exe && \
+  mkdir "C:\docker-gen" && \
+  move docker-gen.exe C:\docker-gen
 
-COPY network_internal.conf C:/nginx-%NGINX_VERSION%/conf/
+# Download openssl
+RUN curl.exe -kfSL -o openssl.zip http://wiki.overbyte.eu/arch/openssl-1.1.1b-win64.zip && \
+  mkdir "C:\openssl" && \
+  tar.exe -xf openssl.zip -C "C:\openssl"
+
+COPY network_internal.conf C:/nginx/conf/
 
 # Setting DOCKER_HOST on Windows is a little bit more complicated than under Linux
 # Change the Docker "daemon.json" according to this URL before using 127.0.0.1:2375
 # https://dille.name/blog/2017/11/29/using-the-docker-named-pipe-as-a-non-admin-for-windowscontainers/
-ENV DOCKER_HOST tcp://127.0.0.1:2375
+#ENV DOCKER_HOST tcp://host.docker.internal:2375
 
 VOLUME ["C:/nginx/certs", "C:/nginx/dhparam"]
 
-ENTRYPOINT ["docker-entrypoint.ps1"]
+COPY . C:/app/
+WORKDIR C:/app/
+
+SHELL ["pwsh.exe", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'Continue'; $verbosePreference='Continue';"]
+
+ENTRYPOINT "C:\app\docker-entrypoint.ps1"
 CMD ["forego", "start", "-r"]
