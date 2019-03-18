@@ -1,7 +1,13 @@
-FROM mcr.microsoft.com/windows/nanoserver/insider:10.0.18356.1
+FROM mcr.microsoft.com/windows/servercore/insider:10.0.18356.1
+#NanoServer can NOT run 32-bit NGINX! 64-bit NGINX not provided by project itself
+#FROM mcr.microsoft.com/windows/nanoserver/insider:10.0.18356.1
 LABEL maintainer="Ferdi Oeztuerk foerdi@gmail.com"
 
-ENV NGINX_VERSION 1.15.9
+# jwilder uses this nginx version
+ENV NGINX_VERSION 1.14.1
+
+# latest and greatest nginx
+#ENV NGINX_VERSION 1.15.9
 ENV DOCKER_GEN_VERSION 0.7.4
 ENV PWSH_CORE_VERSION 6.1.3
 ENV DHPARAM_BITS 2048
@@ -18,7 +24,7 @@ RUN curl.exe -kfSL -o nginx.zip http://nginx.org/download/nginx-%NGINX_VERSION%.
   tar.exe -xf nginx.zip -C "C:" && \
   ren nginx-%NGINX_VERSION% nginx
 
-COPY nginx.conf C:/nginx/conf/
+#COPY nginx.conf C:/nginx/conf/
 
 # Download forego
 RUN curl.exe -kfSL -o forego.zip https://bin.equinox.io/c/ekMN3bCZFUn/forego-stable-windows-amd64.zip && \

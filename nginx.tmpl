@@ -1,7 +1,8 @@
 {{ $CurrentContainer := where $ "ID" .Docker.CurrentContainerID | first }}
 
 worker_processes  auto;
-error_log  logs/error.log;
+error_log  C:/nginx/logs/error.log;
+#error_log  logs/debug.log debug;
 
 {{ define "upstream" }}
 	{{ if .Address }}
@@ -72,8 +73,8 @@ access_log off;
 resolver {{ $.Env.RESOLVERS }};
 {{ end }}
 
-{{ if (exists "C:/nginx/proxy.conf") }}
-include C:/nginx/proxy.conf;
+{{ if (exists "C:/nginx/conf/proxy.conf") }}
+include C:/nginx/conf/proxy.conf;
 {{ else }}
 # HTTP 1.1 support
 proxy_http_version 1.1;
