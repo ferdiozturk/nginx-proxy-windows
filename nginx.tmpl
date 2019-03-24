@@ -1,4 +1,4 @@
-{{ $CurrentContainer := where $ "ID" .Docker.CurrentContainerID | first }}
+{{ $CurrentContainer := whereContains $ "ID" .Docker.CurrentContainerID | first}}
 
 worker_processes  auto;
 error_log  C:/nginx/logs/error.log;

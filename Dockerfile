@@ -1,13 +1,19 @@
+#FROM mcr.microsoft.com/windows/servercore:latest
+
+# Insider build contains curl and other tools
 FROM mcr.microsoft.com/windows/servercore/insider:10.0.18356.1
-#NanoServer can NOT run 32-bit NGINX! 64-bit NGINX not provided by project itself
+
+# NanoServer can NOT run 32-bit NGINX! 64-bit NGINX not provided by project itself
+# ToDo: Find 64-bit Nginx, or compile it for x64
 #FROM mcr.microsoft.com/windows/nanoserver/insider:10.0.18356.1
+
 LABEL maintainer="Ferdi Oeztuerk foerdi@gmail.com"
 
 # jwilder uses this nginx version
 ENV NGINX_VERSION 1.14.1
-
 # latest and greatest nginx
 #ENV NGINX_VERSION 1.15.9
+
 ENV DOCKER_GEN_VERSION 0.7.4
 ENV PWSH_CORE_VERSION 6.1.3
 ENV DHPARAM_BITS 2048
